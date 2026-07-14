@@ -1,0 +1,36 @@
+# --- Rust build output -----------------------------------------------------
+/target
+**/*.rs.bk
+*.pdb
+
+# Cargo.lock is COMMITTED on purpose. This workspace ships a binary
+# (`crates/proxima-cli` -> `proxima`), and for a binary the lockfile is part of
+# the build: it is what makes "the numbers in the docs are the numbers you get"
+# true for someone who clones the repo. Do not add Cargo.lock here.
+
+# --- Criterion ------------------------------------------------------------
+# `cargo bench` writes its samples, estimates and reports under target/, but
+# criterion also honours CRITERION_HOME, which people point at the repo root.
+/criterion
+criterion/
+**/target/criterion/
+
+# --- Proxima runtime artefacts --------------------------------------------
+# The default data directory of `proxima serve` and `proxima query`.
+proxima-data/
+# WAL segments and snapshots, wherever a test or a local run drops them.
+*.snap
+wal
+**/wal
+*.wal
+
+# --- Editors --------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- OS noise -------------------------------------------------------------
+.DS_Store
+Thumbs.db
