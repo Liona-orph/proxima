@@ -1,0 +1,23 @@
+[package]
+name = "proxima-core"
+description = "Vectors, distance kernels, identifiers and errors for the Proxima search engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+criterion.workspace = true
+
+[[bench]]
+name = "distance"
+harness = false
+
+[lints]
+workspace = true
