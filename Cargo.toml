@@ -1,0 +1,199 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/proxima-core",
+    "crates/proxima-quantize",
+    "crates/proxima-index",
+    "crates/proxima-store",
+    "crates/proxima-server",
+    "crates/proxima-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+license = "Apache-2.0"
+repository = "https://github.com/proxima-search/proxima"
+authors = ["The Proxima authors"]
+
+# ---------------------------------------------------------------------------
+# Dependency policy
+# ---------------------------------------------------------------------------
+# Proxima is a from-first-principles vector search engine. The graph, the
+# quantizers, the k-means and the distance kernels are all in-tree, because they
+# are the only thing the project is actually judged on. In particular there is
+# deliberately NO dependency on hnswlib, faiss, usearch, instant-distance,
+# ndarray or any other ANN / linear-algebra crate.
+#
+# Runtime dependencies (three, and they are all small):
+#   thiserror   - derive for `std::error::Error`. Pure proc-macro, no runtime
+#                 cost. Hand-writing Display/Error for the error enum is
+#                 boilerplate with a real risk of the message drifting away from
+#                 the variant's fields, which is exactly the failure mode the
+#                 "diagnosable from one log line" rule exists to prevent.
+#   rand        - `Rng::gen_range` and the `SeedableRng` trait. We only ever
+#                 construct generators from an explicit u64 seed; `thread_rng`
+#                 is never used, because every result this engine produces has
+#                 to be reproducible from the config alone.
+#   rand_chacha - the actual generator. `rand::rngs::StdRng` is explicitly
+#                 documented as *not* reproducible across rand releases, which
+#                 would make "same seed, same graph" a lie the moment the
+#                 lockfile moves. `ChaCha8Rng` guarantees a stable stream, and
+#                 that guarantee is what the determinism tests rest on.
+#
+# Deliberately NOT taken:
+#   rand_distr  - we need exactly two non-uniform distributions: the HNSW level
+#                 generator (an exponential, which is `-ln(U) * m_L`, one line)
+#                 and Gaussian test fixtures (Box-Muller, four lines). Neither
+#                 justifies a dependency.
+#   rayon       - parallel build is a real want, but it changes the neighbour
+#                 selection order and therefore the graph. Determinism was worth
+#                 more than build throughput here; see `HnswIndex` docs.
+#   serde       - persistence is a later crate's problem, and forcing a
+#                 serialisation model on `Metadata` now would constrain it.
+#
+# Dev-dependencies:
+#   proptest    - metric axioms and scalar/unrolled kernel agreement are
+#                 property claims; example-based tests cannot express them.
+#   criterion   - statistically sound benchmarks. The numbers in
+#                 crates/proxima-index/BENCHMARKS.md come from it.
+[workspace.dependencies]
+thiserror = "2.0"
+# Exact pins: the newest releases that still build on the pinned 1.83 toolchain.
+rand = { version = "=0.8.5", default-features = false, features = ["std"] }
+rand_chacha = "=0.3.1"
+# The only dependency the server takes. Installing a signal handler is
+# `sigaction`, which is FFI, which is `unsafe`; `signal_hook::flag::register` is
+# a safe wrapper that sets an `AtomicBool` from the handler, which is exactly
+# the four lines `proxima-server` needs and nothing more. Unix-only, and the
+# server degrades to admin-endpoint-only shutdown without it.
+signal-hook = { version = "=0.3.17", default-features = false }
+
+proxima-core = { path = "crates/proxima-core", version = "0.1.0" }
+proxima-quantize = { path = "crates/proxima-quantize", version = "0.1.0" }
+proxima-index = { path = "crates/proxima-index", version = "0.1.0" }
+proxima-store = { path = "crates/proxima-store", version = "0.1.0" }
+proxima-server = { path = "crates/proxima-server", version = "0.1.0" }
+
+proptest = "=1.5.0"
+criterion = { version = "=0.7.0", default-features = false, features = ["cargo_bench_support"] }
+
+# ---------------------------------------------------------------------------
+# Lints
+# ---------------------------------------------------------------------------
+# Inherited by every crate via `[lints] workspace = true`.
+[workspace.lints.rust]
+# Each crate also carries `#![forbid(unsafe_code)]`. This is belt-and-braces:
+# if an exception is ever justified it still has to be spelled out.
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# Enforces the project rule "no unwrap outside tests". Test modules opt out
+# locally with `#![allow(clippy::unwrap_used)]`, which makes every exception
+# grep-able in one command.
+unwrap_used = "deny"
+# `expect` is allowed but rare, and every use names the invariant that makes it
+# unreachable in a comment on the same line.
+expect_used = "allow"
+# --- pedantic lints we switch off, with reasons ---------------------------
+# `proxima_core::ProximaError` reads better at a call site in another crate
+# than `proxima_core::Error` would.
+module_name_repetitions = "allow"
+# Nearly every accessor on a container is a "must_use candidate"; the
+# signal-to-noise ratio is far too low to be worth the noise.
+must_use_candidate = "allow"
+# Errors are documented centrally on `ProximaError`; repeating an `# Errors`
+# section on every `Result`-returning method would bury the useful docs.
+missing_errors_doc = "allow"
+# Fires on every slice index. Real panics are documented with `# Panics`.
+missing_panics_doc = "allow"
+# Width conversions are the daily business of a slot-addressed store (slots are
+# u32, lengths are usize, dimensions are usize). Every site is bounds-checked
+# by the allocator or provably in range; a blanket lint would be ~40 individual
+# allows carrying no information.
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+# Signed metadata values are persisted through their `u64` bit pattern, which is
+# a deliberate two's-complement round trip, and test fixtures index by `i64`.
+# The lint has no way to tell that from an accident.
+cast_possible_wrap = "allow"
+cast_precision_loss = "allow"
+# `f32` is the storage type of the whole engine; the accumulators in the
+# kernels are deliberately f32 too so that the scalar and unrolled variants
+# agree to within a documented tolerance rather than by luck.
+cast_lossless = "allow"
+# We prefer explicit `if`/`match` in the search loops, because the branches
+# carry comments explaining the heuristic they implement.
+if_not_else = "allow"
+# Long, precise doc paragraphs are the point of this repository.
+doc_markdown = "allow"
+# Same reason as `must_use_candidate`.
+return_self_not_must_use = "allow"
+# The distance dispatch has textually identical arms with different kernels;
+# merging them would give up the exhaustiveness check that makes adding a
+# metric safe.
+match_same_arms = "allow"
+# Search loops are genuinely long and splitting them at an arbitrary point
+# would hide the control flow the comments explain.
+too_many_lines = "allow"
+# `similar_names` fires on `dist`/`dists` and `node`/`nodes` throughout.
+similar_names = "allow"
+
+# ---------------------------------------------------------------------------
+# Profiles
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# The README's quickstart, as a program
+# ---------------------------------------------------------------------------
+# A workspace-root example rather than a doctest, because it is the *first*
+# thing a reader runs and it should be one `cargo run` away. `make ci` builds
+# and runs it, so the README's first code block cannot silently stop compiling.
+# The package is named `proxima-examples` and not `proxima`: the binary in
+# `crates/proxima-cli` is already called `proxima`, and two targets with the same
+# name in one workspace make `cargo doc` emit a collision warning.
+[package]
+name = "proxima-examples"
+description = "Workspace root: hosts the README quickstart example"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+proxima-core.workspace = true
+proxima-index.workspace = true
+
+[[example]]
+name = "quickstart"
+path = "examples/quickstart.rs"
+
+[lib]
+name = "proxima_examples"
+path = "src/root.rs"
+
+[profile.release]
+opt-level = 3
+# The distance kernels are called through `Metric` from another crate on every
+# single graph hop. Without cross-crate inlining the dispatch dominates.
+lto = "fat"
+codegen-units = 1
+# Keep line tables: profiling a release build of a search engine without them is
+# miserable, and they cost nothing at runtime.
+debug = 1
+panic = "unwind"
+
+[profile.bench]
+inherits = "release"
+
+[profile.test]
+opt-level = 1

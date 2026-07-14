@@ -1,0 +1,32 @@
+# EditorConfig — https://editorconfig.org
+# The formatting rules that rustfmt does not own (YAML, TOML, Markdown) live
+# here so that an editor gets them right before `make fmt` has to complain.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Matches rustfmt's defaults: 4-space indent, 100-column max_width. Keeping the
+# two in agreement means the editor's guide sits exactly where `cargo fmt` wraps.
+[*.rs]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.{yml,yaml,toml,json,md}]
+indent_style = space
+indent_size = 2
+
+# Make is whitespace-sensitive: recipe lines must begin with a hard tab.
+[Makefile]
+indent_style = tab
+indent_size = 4
+
+[{Dockerfile,.dockerignore,.gitignore,CODEOWNERS,LICENSE,NOTICE}]
+indent_style = space
+indent_size = 2
