@@ -1,0 +1,20 @@
+[package]
+name = "proxima-store"
+description = "Write-ahead log, snapshots and durable collections for the Proxima search engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+proxima-core.workspace = true
+proxima-index.workspace = true
+proxima-quantize.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+
+[lints]
+workspace = true
