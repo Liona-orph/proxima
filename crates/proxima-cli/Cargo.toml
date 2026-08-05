@@ -1,0 +1,25 @@
+[package]
+name = "proxima-cli"
+description = "The proxima command: serve, bench and query"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "proxima"
+path = "src/main.rs"
+
+[dependencies]
+proxima-core.workspace = true
+proxima-index.workspace = true
+proxima-quantize.workspace = true
+proxima-store.workspace = true
+proxima-server.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
+
+[lints]
+workspace = true
