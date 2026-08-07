@@ -1,0 +1,35 @@
+# Keep the build context small: everything here is either rebuilt inside the
+# image or has no business in it. A stale host `target/` is the usual culprit
+# for a slow `docker build`.
+
+# Build output
+target/
+**/target/
+
+# Git metadata
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Runtime data: WAL segments and snapshots from a local run.
+proxima-data/
+*.snap
+*.wal
+
+# Prose and repository hygiene. None of it changes the binary, and including it
+# would invalidate the context cache every time someone fixes a typo.
+docs/
+*.md
+LICENSE
+NOTICE
+CODEOWNERS
+.editorconfig
+Makefile
+Dockerfile
+.dockerignore
+
+# Editor and OS noise
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,165 @@
+name: Bug report
+description: Something is wrong, and you can show us.
+title: "[bug] "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Two things make a Proxima bug report
+        actionable, and both are asked for below:
+
+        1. **The seed and the index configuration.** Search results are
+           deterministic given those; without them we cannot rebuild the graph
+           you saw.
+        2. **A number, if you are reporting a recall or correctness problem.**
+           "The results look wrong" is not reproducible. A `recall_at_k`
+           measurement or the output of `proxima bench` is.
+
+        If this is a security issue, **stop** and read
+        [SECURITY.md](https://github.com/proxima-search/proxima/blob/main/SECURITY.md)
+        instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: "`proxima --version`, the crates.io version, or the commit SHA you built."
+      placeholder: "0.1.0, or 4f9c1ab"
+    validations:
+      required: true
+
+  - type: textarea
+    id: toolchain
+    attributes:
+      label: Toolchain
+      description: "Output of `rustc -Vv`. The repository pins 1.83.0; if you built with something else, that is useful to know."
+      placeholder: |
+        rustc 1.83.0 (90b35a623 2024-11-26)
+        binary: rustc
+        commit-hash: ...
+        host: x86_64-unknown-linux-gnu
+        release: 1.83.0
+        LLVM version: 19.1.1
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: OS, version, CPU architecture, and whether this is in a container.
+      placeholder: "Ubuntu 24.04, x86_64 (Zen 4) / macOS 15.2, aarch64 / distroless image on Kubernetes"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Which crate
+      description: Best guess is fine; triage will move it if you are wrong.
+      multiple: true
+      options:
+        - proxima-core (vector space, distance kernels, storage, top-k, metadata)
+        - proxima-quantize (scalar quantization, product quantization, k-means)
+        - proxima-index (FlatIndex, HnswIndex, IvfPqIndex, recall)
+        - proxima-store (WAL, snapshots, Collection)
+        - proxima-server (HTTP/JSON API, filters, metrics)
+        - proxima-cli (serve, bench, query)
+        - not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Index configuration and seed
+      description: |
+        Everything needed to rebuild the same index: metric, dimension, corpus
+        size, index type and its parameters, **and the seed**. Without the seed
+        the graph cannot be reproduced, and neither can the bug.
+      placeholder: |
+        metric:          cosine
+        dim:             128
+        vectors:         50000
+        index:           hnsw
+        m:               16
+        ef_construction: 200
+        ef_search:       64
+        seed:            0x9e3779b9
+        filter:          {"lang": "en"}
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Exact reproduction
+      description: |
+        The commands, requests or code that produce it, verbatim, from a clean
+        data directory. A `proxima` invocation, a `curl`, or a small `#[test]`
+        are all good. If the data matters, say how it was generated — a seeded
+        fixture beats an attachment.
+      placeholder: |
+        cargo run --release -p proxima-cli -- bench --vectors 50000 --dim 128 --seed 0x9e3779b9
+        # or
+        proxima serve --data ./tmp-data &
+        curl -s localhost:7700/collections -d '{"name":"docs","dim":128,"metric":"cosine"}'
+        curl -s localhost:7700/collections/docs/search -d '{"vector":[...],"k":10}'
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: What you expected, and what happened
+      description: Include the full error, panic message or backtrace if there was one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: recall
+    attributes:
+      label: Recall or correctness measurement
+      description: |
+        **Required if you are reporting that search results are wrong, missing
+        or worse than expected.** Paste the output of `proxima bench`, or a
+        `recall_at_k` measurement against `FlatIndex` (which is exact by
+        construction, and therefore the ground truth).
+
+        A report of the form "search results look wrong" with no recall number
+        is not actionable and will be closed asking for one. Approximate
+        indexes are approximate: recall below 1.0 is expected, and the question
+        is always *how far* below, at which `ef_search` or `nprobe`.
+
+        Leave blank for crashes, panics, API errors, build failures and
+        documentation bugs.
+      placeholder: |
+        cargo run --release -p proxima-cli -- bench --vectors 50000 --seed 0x9e3779b9
+
+        index    build      mean query   p95 query   recall@10   min
+        flat     0.31s      4.10ms       4.42ms      1.000       1.000
+        hnsw     18.7s      0.089ms      0.164ms     0.412       0.100   <-- expected ~0.98
+        ivfpq    9.2s       0.204ms      0.331ms     0.951       0.700
+      render: text
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Workarounds you found, when it started, `/metrics` output, logs.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues.
+          required: true
+        - label: I gave the seed and index configuration, so this can be reproduced.
+          required: true
+        - label: This is not a security issue (those go to security@proxima-search.dev).
+          required: true

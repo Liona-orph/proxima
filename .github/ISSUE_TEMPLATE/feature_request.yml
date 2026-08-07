@@ -1,0 +1,96 @@
+name: Feature request
+description: Propose something Proxima should do that it does not.
+title: "[feature] "
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proxima is deliberately small, and the things it does not do are mostly
+        choices rather than omissions — no ANN or linear-algebra dependency, no
+        parallel graph build (it would change the graph), no OR in the filter
+        language, no authentication in the server. So the useful shape of a
+        feature request here is: what problem you hit, what it cost you, and
+        what the feature would trade away.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What were you trying to do, and where did Proxima stop you? Concrete beats general.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you are proposing
+      description: The behaviour, the API, or the flag. A sketch of the signature is welcome.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: crate
+    attributes:
+      label: Where it belongs
+      multiple: true
+      options:
+        - proxima-core
+        - proxima-quantize
+        - proxima-index
+        - proxima-store
+        - proxima-server
+        - proxima-cli
+        - docs
+        - not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: tradeoff
+    attributes:
+      label: The trade-off
+      description: |
+        What does this cost? Build time, query latency, memory per vector,
+        recall, determinism, a dependency, API surface, on-disk compatibility?
+        An honest answer here makes the proposal much more likely to land.
+
+        Two costs are close to disqualifying on their own, so say so explicitly
+        if either applies: **a new runtime dependency** (which needs a
+        justification paragraph in the workspace `Cargo.toml`, and must not be
+        an ANN or linear-algebra crate), and **anything that makes results
+        depend on thread scheduling, `thread_rng` or hash-map iteration order**,
+        because "same seed, same graph" is a tested property.
+    validations:
+      required: true
+
+  - type: textarea
+    id: measurement
+    attributes:
+      label: What it would be measured by
+      description: |
+        If this is a performance or recall feature, what number should move,
+        and how would we know? Name the benchmark — `proxima bench`,
+        `cargo bench -p proxima-core`, `cargo bench -p proxima-index` — and the
+        figure you expect. A guess is fine; say it is a guess.
+      placeholder: |
+        Expect p95 query on the 50k/128d fixture to drop; recall@10 unchanged.
+        Measured by: cargo run --release -p proxima-cli -- bench --seed 0x9e3779b9
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Including doing it outside Proxima. What made them not work?
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and the docs.
+          required: true
+        - label: I read CONTRIBUTING.md, in particular the dependency and determinism rules.
+          required: true
+        - label: I am willing to discuss the trade-off rather than only the feature.
+          required: true
