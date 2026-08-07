@@ -1,0 +1,33 @@
+# Code owners for Proxima.
+#
+# GitHub applies these rules top to bottom and **the last matching pattern
+# wins** — it does not union the matches. So the global rule goes first and the
+# specific areas go below it; anything you add later must be more specific than
+# the line above it or it will silently take over.
+#
+# Teams live in the `proxima-search` organisation.
+
+# Global fallback: anything not claimed below.
+*                           @proxima-search/maintainers
+
+# Vector space, distance kernels, slot allocator, top-k, metadata. Changing a
+# kernel changes every number in BENCHMARKS.md, so this area is reviewed by the
+# people who own those numbers.
+/crates/proxima-core/       @proxima-search/core
+
+# VectorIndex, FlatIndex, HnswIndex, IvfPqIndex, recall_at_k. Recall is a
+# correctness property here, not a nice-to-have.
+/crates/proxima-index/      @proxima-search/index
+
+# WAL, snapshots, Collection. Durability bugs are the ones you find in
+# production at 3am; this area gets a durability reviewer.
+/crates/proxima-store/      @proxima-search/storage
+
+# Hand-written HTTP and JSON, the public API surface, metrics.
+/crates/proxima-server/     @proxima-search/server
+
+# CI, release automation, and anything that can run with a token.
+/.github/                   @proxima-search/maintainers @proxima-search/release
+
+# Prose. Reviewed for the "every number is a measured number" rule.
+/docs/                      @proxima-search/docs @proxima-search/maintainers
