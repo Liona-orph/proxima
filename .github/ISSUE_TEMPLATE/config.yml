@@ -1,0 +1,19 @@
+# Blank issues are off: the bug form asks for the seed and the index
+# configuration, and a report without them cannot be reproduced.
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/proxima-search/proxima/blob/main/SECURITY.md
+    about: >-
+      Do not open a public issue. Read SECURITY.md and mail
+      security@proxima-search.dev. It has the threat model, what is in scope,
+      and what to expect and when.
+  - name: Question, or "is this the intended behaviour"
+    url: https://github.com/proxima-search/proxima/discussions
+    about: >-
+      Ask in Discussions. Recall below 1.0 on an approximate index is expected,
+      not a bug; if you are not sure whether what you are seeing is one, start
+      here.
+  - name: Code of Conduct
+    url: https://github.com/proxima-search/proxima/blob/main/CODE_OF_CONDUCT.md
+    about: Conduct concerns go to conduct@proxima-search.dev, not to an issue.

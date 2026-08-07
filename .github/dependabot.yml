@@ -1,0 +1,66 @@
+# Dependabot.
+#
+# Note on the cargo ecosystem: most versions in the workspace Cargo.toml are
+# pinned with `=` **on purpose** — `rand = "=0.8.5"`, `rand_chacha = "=0.3.1"`,
+# `signal-hook = "=0.3.17"`, and the dev-dependencies too. The pins are what
+# make "same seed, same graph" survive a lockfile update, since `rand`'s
+# generators are only guaranteed reproducible within a release line, and they
+# are also what keeps the crates building on the pinned 1.83.0 toolchain.
+#
+# So a Dependabot PR against one of those is not a rubber stamp. Reviewing it
+# means re-reading the justification paragraph for that dependency in the
+# workspace Cargo.toml and checking it still holds at the new version, checking
+# the new version still builds on 1.83.0, and — for anything in the rand family
+# — checking the determinism tests still pass, not merely that CI is green.
+# If the paragraph no longer describes reality, update the paragraph in the
+# same PR. See CONTRIBUTING.md.
+version: 2
+
+updates:
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - rust
+    commit-message:
+      prefix: "deps"
+      include: scope
+    groups:
+      # One PR for the boring updates. Majors stay separate, because a major is
+      # exactly the case where the justification paragraph has to be re-argued.
+      cargo-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - ci
+    commit-message:
+      prefix: "ci"
+    groups:
+      # Actions are pinned to full commit SHAs with a trailing version comment.
+      # Dependabot updates both the SHA and the comment, which is the whole
+      # reason the comment is there.
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
