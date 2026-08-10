@@ -68,7 +68,7 @@ rand_chacha = "=0.3.1"
 # a safe wrapper that sets an `AtomicBool` from the handler, which is exactly
 # the four lines `proxima-server` needs and nothing more. Unix-only, and the
 # server degrades to admin-endpoint-only shutdown without it.
-signal-hook = { version = "=0.3.17", default-features = false }
+signal-hook = { version = "=0.4.4", default-features = false }
 
 proxima-core = { path = "crates/proxima-core", version = "0.1.0" }
 proxima-quantize = { path = "crates/proxima-quantize", version = "0.1.0" }
