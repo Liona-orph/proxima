@@ -122,5 +122,5 @@ the engine is rather than a diff.
   runs the same steps with every action pinned to a commit SHA.
 - Multi-stage `Dockerfile` producing a distroless, non-root image.
 
-[0.1.0]: https://github.com/proxima-search/proxima/releases/tag/v0.1.0
-[unreleased]: https://github.com/proxima-search/proxima/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Liona-orph/proxima/releases/tag/v0.1.0
+[unreleased]: https://github.com/Liona-orph/proxima/compare/v0.1.0...HEAD

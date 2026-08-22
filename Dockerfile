@@ -62,9 +62,9 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 
 LABEL org.opencontainers.image.title="proxima" \
       org.opencontainers.image.description="Proxima: a from-scratch vector search engine (HNSW, IVF-PQ, WAL-backed storage)." \
-      org.opencontainers.image.source="https://github.com/proxima-search/proxima" \
-      org.opencontainers.image.url="https://github.com/proxima-search/proxima" \
-      org.opencontainers.image.documentation="https://github.com/proxima-search/proxima#readme" \
+      org.opencontainers.image.source="https://github.com/Liona-orph/proxima" \
+      org.opencontainers.image.url="https://github.com/Liona-orph/proxima" \
+      org.opencontainers.image.documentation="https://github.com/Liona-orph/proxima#readme" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.vendor="The Proxima Authors" \
       org.opencontainers.image.version="0.1.0"

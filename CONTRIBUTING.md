@@ -27,7 +27,7 @@ lint set moves between releases, and a lint that fires for you but not for CI
 (or the reverse) wastes everyone's afternoon.
 
 ```sh
-git clone https://github.com/proxima-search/proxima
+git clone https://github.com/Liona-orph/proxima
 cd proxima
 make ci
 ```
@@ -261,7 +261,8 @@ want feedback on.
   `proxima bench` — "the results look wrong" without a recall figure is not
   actionable.
 - Security: **do not open an issue.** See [SECURITY.md](SECURITY.md).
-- Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), `conduct@proxima-search.dev`.
+- Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md); use GitHub's repository
+  reporting tools for a private report.
 
 ## Licence
 

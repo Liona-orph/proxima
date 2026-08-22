@@ -3,8 +3,8 @@
 A vector search engine written from first principles in Rust, with the recall
 number as part of the API rather than part of the marketing.
 
-[![ci](https://github.com/proxima-search/proxima/actions/workflows/ci.yml/badge.svg)](https://github.com/proxima-search/proxima/actions/workflows/ci.yml)
-[![audit](https://github.com/proxima-search/proxima/actions/workflows/audit.yml/badge.svg)](https://github.com/proxima-search/proxima/actions/workflows/audit.yml)
+[![ci](https://github.com/Liona-orph/proxima/actions/workflows/ci.yml/badge.svg)](https://github.com/Liona-orph/proxima/actions/workflows/ci.yml)
+[![audit](https://github.com/Liona-orph/proxima/actions/workflows/audit.yml/badge.svg)](https://github.com/Liona-orph/proxima/actions/workflows/audit.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![rust 1.83+](https://img.shields.io/badge/rust-1.83%2B-orange.svg)](rust-toolchain.toml)
 [![unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](#house-rules)

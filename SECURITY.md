@@ -16,8 +16,9 @@ and read `CHANGELOG.md` before upgrading.
 
 ## Reporting a vulnerability
 
-Email **security@proxima-search.dev**. Do not open a public issue, a discussion,
-or a pull request that describes the problem.
+Use GitHub's private vulnerability reporting on this repository (**Security →
+Report a vulnerability**). Do not open a public issue, a discussion, or a pull
+request that describes the problem.
 
 Include, as far as you have it:
 
@@ -31,7 +32,7 @@ Include, as far as you have it:
 
 | | |
 | --- | --- |
-| Acknowledgement of your email | within 3 working days |
+| Acknowledgement of your report | within 3 working days |
 | Initial assessment: is it a vulnerability, and how bad | within 10 working days |
 | Fix, or a plan with dates if the fix is not simple | within 30 days of the assessment |
 | Public disclosure | at the fix, or 90 days after your report, whichever is first |
@@ -180,6 +181,6 @@ We will not treat these as vulnerabilities:
 - Anything requiring an attacker who already has local filesystem or process
   access on the host.
 
-If you are not sure which side of the line something falls on, mail
-security@proxima-search.dev and ask. We would rather read a report that turns
-out to be out of scope than not read one that was not.
+If you are not sure which side of the line something falls on, submit a private
+report and ask. We would rather read a report that turns out to be out of scope
+than not read one that was not.
