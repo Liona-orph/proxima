@@ -265,6 +265,10 @@ fn handle_connection(
     shutdown: &Arc<AtomicBool>,
     config: &ServerConfig,
 ) {
+    // BSD-derived platforms can propagate the listener's non-blocking mode to
+    // accepted sockets. A keep-alive read would then see `WouldBlock` before
+    // the client can send its next request and incorrectly answer with 408.
+    let _ = stream.set_nonblocking(false);
     let _ = stream.set_read_timeout(Some(config.connection_timeout));
     let _ = stream.set_write_timeout(Some(config.connection_timeout));
     // Nagle's algorithm delays a small response waiting for more data that will
