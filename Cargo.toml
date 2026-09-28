@@ -76,7 +76,7 @@ proxima-index = { path = "crates/proxima-index", version = "0.1.0" }
 proxima-store = { path = "crates/proxima-store", version = "0.1.0" }
 proxima-server = { path = "crates/proxima-server", version = "0.1.0" }
 
-proptest = "=1.5.0"
+proptest = "=1.11.0"
 criterion = { version = "=0.7.0", default-features = false, features = ["cargo_bench_support"] }
 
 # ---------------------------------------------------------------------------
